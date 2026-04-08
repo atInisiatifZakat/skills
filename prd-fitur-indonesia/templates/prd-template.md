@@ -213,7 +213,7 @@ Skenario: [Edge case atau kegagalan]
 ### Repo Target
 
 *Daftar repo spesifik yang perlu diubah untuk mengimplementasikan fitur ini.
-Nama repo merujuk ke entri di `repos/config.json`.*
+Nama repo merujuk ke daftar repo yang dikenal di project ini.*
 
 | Repo | Jenis Perubahan | File / Modul / Endpoint | Deskripsi Perubahan |
 |---|---|---|---|
@@ -224,7 +224,7 @@ Nama repo merujuk ke entri di `repos/config.json`.*
 `Fitur Baru` · `Modifikasi` · `API Contract` · `Skema Database` · `Konfigurasi` · `Tidak Ada Perubahan Kode`
 
 **Aturan:**
-- Setiap repo yang disebutkan harus terdaftar di `repos/config.json`
+- Setiap repo yang disebutkan harus konsisten dengan yang digunakan di seluruh dokumen PRD project ini
 - Jika fitur hanya menyentuh satu repo, tetap tulis tabelnya — eksplisit lebih baik dari implisit
 - Repo dengan jenis `API Contract` atau `Skema Database` otomatis memicu §12 Dependensi
 - Jika fitur ini adalah subset dari Epic, pastikan daftar repo di sini merupakan subset dari daftar repo di Epic PRD parent

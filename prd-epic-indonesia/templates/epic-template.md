@@ -216,7 +216,7 @@
 ### Repo yang Terdampak
 
 *Daftar semua repo yang perlu diubah, ditambahkan, atau disesuaikan untuk merealisasikan epic ini.
-Nama repo merujuk ke entri di `repos/config.json`.*
+Nama repo merujuk ke daftar repo yang dikenal di project ini.*
 
 | Repo | Jenis Perubahan | Komponen / Service | Estimasi Dampak | Catatan |
 |---|---|---|---|---|
@@ -228,7 +228,7 @@ Nama repo merujuk ke entri di `repos/config.json`.*
 `Fitur Baru` · `Modifikasi` · `API Contract` · `Skema Database` · `Konfigurasi` · `Infrastruktur` · `Tidak Ada Perubahan Kode`
 
 **Aturan:**
-- Setiap repo yang disebutkan harus terdaftar di `repos/config.json`
+- Setiap repo yang disebutkan harus konsisten dengan yang digunakan di seluruh dokumen PRD project ini
 - Repo dengan jenis `API Contract` atau `Skema Database` otomatis memicu §14 Dependensi
 - Jika epic tidak menyentuh repo manapun secara langsung, tulis: *"Epic ini tidak memerlukan perubahan kode — hanya konfigurasi atau operasional."*
 

@@ -34,7 +34,7 @@
 
 ### §8 Solusi
 **PELANGGARAN:** Tidak ada link artefak desain sama sekali · Tidak ada peta cakupan user story · Tidak ada seksi alternatif yang dipertimbangkan · Alternatif ada tapi tidak ada alasan penolakan · Seksi Repo Target tidak ada sama sekali
-**PERINGATAN:** Link desain ada tapi masih Draft · Satu atau lebih user story dari §7 tidak ada di peta cakupan · Repo yang disebutkan tidak ada di `repos/config.json` · Perubahan `API Contract` atau `Skema Database` ada tapi §12 Dependensi tidak aktif · Fitur bagian dari Epic tapi repo di sini tidak subset dari repo di Epic PRD parent
+**PERINGATAN:** Link desain ada tapi masih Draft · Satu atau lebih user story dari §7 tidak ada di peta cakupan · Repo yang disebutkan tidak konsisten dengan dokumen PRD lain di project · Perubahan `API Contract` atau `Skema Database` ada tapi §12 Dependensi tidak aktif · Fitur bagian dari Epic tapi repo di sini tidak subset dari repo di Epic PRD parent
 
 ### §9 Kriteria Penerimaan
 **PELANGGARAN:** Seksi tidak ada sama sekali · Tidak ada checklist untuk satu atau lebih user story Wajib

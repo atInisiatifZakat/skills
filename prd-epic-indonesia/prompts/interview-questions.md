@@ -12,22 +12,36 @@ Gunakan jawaban §0 untuk konfigurasi seksi opsional dan menyesuaikan pertanyaan
 
 ---
 
-### §0.0 — Base Path (Tanyakan Pertama Kali)
+### §0.0 — Base Path & Repo Config (Tanyakan Pertama Kali)
 
-Sebelum pertanyaan apapun, tanyakan:
+Sebelum pertanyaan apapun, lakukan dua hal:
 
-> *"Di mana dokumen PRD disimpan di project ini?"*
+**A. Deteksi base path PRD:**
+Tanyakan: "Di mana dokumen PRD disimpan di project ini?"
+- Jika Claude Code aktif → cek dulu apakah ada folder `prd/` atau `docs/plan/`
+  di filesystem, tawarkan yang ditemukan sebagai pilihan utama
+- Jika tidak ada folder → gunakan `docs/plan` sebagai default, konfirmasi ke pengguna
+- Catat sebagai {base-path}
 
-Berikan contoh pilihan umum:
-- `docs/plan` — konvensi standar
-- `prd/nama-app` — jika project multi-app seperti `prd/mobile-app` atau `prd/backend`
-- Path lain sesuai konvensi tim
+Path output final: `{base-path}/{nama-epic}/epic.md` dan `{base-path}/{nama-epic}/arch.md`
 
-**Aturan:**
-- Catat jawaban sebagai `{base-path}` — gunakan di semua instruksi penyimpanan selanjutnya
-- Jika pengguna tidak tahu → gunakan `docs/plan` sebagai default dan konfirmasi: *"Saya akan gunakan `docs/plan` sebagai default. Bisa diubah nanti."*
-- Jika Claude Code aktif → cek dulu apakah folder `prd/` atau `docs/plan/` sudah ada di filesystem, tawarkan yang ditemukan sebagai pilihan utama
-- Path output final: `{base-path}/{nama-epic}/epic.md` dan `{base-path}/{nama-epic}/arch.md`
+**B. Deteksi daftar repo (opsional):**
+Jika Claude Code aktif, cari file konfigurasi repo di lokasi umum berikut
+(urutan prioritas):
+  1. `repos.json` (root)
+  2. `repos/config.json`
+  3. `prd/config.json`
+  4. `.repos.json` (root)
+
+Jika ditemukan → baca dan gunakan sebagai referensi nama repo selama wawancara.
+Informasikan ke pengguna: "Saya menemukan daftar repo di [path]. Saya akan
+gunakan sebagai referensi."
+
+Jika tidak ditemukan → lanjut tanpa file. Tanyakan nama repo secara manual
+saat sampai di seksi Repo yang Terdampak / Repo Target.
+
+ATURAN: File konfigurasi repo bersifat opsional. Skill tetap berjalan penuh
+tanpa file ini. Jangan blokir proses jika file tidak ada.
 
 ---
 
@@ -276,7 +290,7 @@ Tunggu konfirmasi. Jangan lanjut ke §1 sebelum pengguna setuju.
 *Pertanyaan repo yang terdampak:*
 4. Repo mana saja yang perlu diubah atau disesuaikan untuk epic ini?
    - Untuk setiap repo: nama repo, jenis perubahan, komponen/service yang terdampak, estimasi dampak
-   - Jika tidak tahu nama repo pastinya: "Saya akan tulis `[TBD — konfirmasi nama repo di repos/config.json]`"
+   - Jika tidak tahu nama repo pastinya: "Saya akan tulis `[TBD — konfirmasi nama repo]`"
    - Probe jika ada perubahan API atau skema: "Apakah ada perubahan API contract atau skema database? Jika ya, saya akan tandai §14 Dependensi otomatis aktif."
    - Jika tidak ada perubahan kode: "Apakah epic ini murni konfigurasi atau operasional tanpa perubahan kode?"
 

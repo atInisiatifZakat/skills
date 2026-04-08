@@ -6,25 +6,39 @@ Tanyakan secara percakapan — satu per satu, tidak sekaligus.
 
 ## §0 — Intake (Jalankan Sebelum Segalanya)
 
-### §0.0 — Base Path (Tanyakan Pertama Kali)
+### §0.0 — Base Path & Repo Config (Tanyakan Pertama Kali)
 
-Sebelum pertanyaan apapun, tanyakan:
+Sebelum pertanyaan apapun, lakukan dua hal:
 
-> *"Di mana dokumen PRD disimpan di project ini?"*
-
-Berikan contoh pilihan umum:
-- `docs/plan` — konvensi standar
-- `prd/nama-app` — jika project multi-app seperti `prd/mobile-app` atau `prd/backend`
-- Path lain sesuai konvensi tim
-
-**Aturan:**
-- Catat jawaban sebagai `{base-path}` — gunakan di semua instruksi penyimpanan selanjutnya
-- Jika pengguna tidak tahu → gunakan `docs/plan` sebagai default dan konfirmasi
-- Jika Claude Code aktif → cek dulu apakah folder `prd/` atau `docs/plan/` sudah ada di filesystem
+**A. Deteksi base path PRD:**
+Tanyakan: "Di mana dokumen PRD disimpan di project ini?"
+- Jika Claude Code aktif → cek dulu apakah ada folder `prd/` atau `docs/plan/`
+  di filesystem, tawarkan yang ditemukan sebagai pilihan utama
+- Jika tidak ada folder → gunakan `docs/plan` sebagai default, konfirmasi ke pengguna
 - **Jika ada Epic PRD parent** → gunakan base-path yang sama dengan Epic PRD tersebut, tidak perlu tanya ulang
-- Path output final:
-  - Dengan Epic: `{base-path}/{nama-epic}/{nama-fitur}/prd.md`
-  - Standalone: `{base-path}/standalone/{nama-fitur}/prd.md`
+- Catat sebagai {base-path}
+
+Path output final:
+- Dengan Epic: `{base-path}/{nama-epic}/{nama-fitur}/prd.md`
+- Standalone: `{base-path}/standalone/{nama-fitur}/prd.md`
+
+**B. Deteksi daftar repo (opsional):**
+Jika Claude Code aktif, cari file konfigurasi repo di lokasi umum berikut
+(urutan prioritas):
+  1. `repos.json` (root)
+  2. `repos/config.json`
+  3. `prd/config.json`
+  4. `.repos.json` (root)
+
+Jika ditemukan → baca dan gunakan sebagai referensi nama repo selama wawancara.
+Informasikan ke pengguna: "Saya menemukan daftar repo di [path]. Saya akan
+gunakan sebagai referensi."
+
+Jika tidak ditemukan → lanjut tanpa file. Tanyakan nama repo secara manual
+saat sampai di seksi Repo Target.
+
+ATURAN: File konfigurasi repo bersifat opsional. Skill tetap berjalan penuh
+tanpa file ini. Jangan blokir proses jika file tidak ada.
 
 ---
 
@@ -191,9 +205,9 @@ Lanjut sampai pengguna bilang "tidak ada lagi story" setelah gap-check prompt.
 5. Ada constraint teknis atau keputusan arsitektur yang membentuk solusi ini?
 
 6. Repo mana saja yang perlu diubah untuk mengimplementasikan fitur ini?
-   - Untuk setiap repo: nama repo (sesuai `repos/config.json`), jenis perubahan, file/modul/endpoint yang terdampak, deskripsi singkat perubahannya
+   - Untuk setiap repo: nama repo, jenis perubahan, file/modul/endpoint yang terdampak, deskripsi singkat perubahannya
    - Jika ada Epic parent: "Apakah repo-repo ini subset dari yang sudah disebutkan di Epic PRD?"
-   - Jika tidak tahu nama repo pastinya: "Saya tulis `[TBD — konfirmasi nama repo di repos/config.json]`"
+   - Jika tidak tahu nama repo pastinya: "Saya tulis `[TBD — konfirmasi nama repo]`"
    - Probe jika ada perubahan API atau skema database: "Apakah ada perubahan API contract atau skema database? Jika ya, §12 Dependensi otomatis aktif."
    - **Aturan:** Jangan skip pertanyaan ini walau fitur terlihat kecil — satu fitur bisa menyentuh banyak repo sekaligus
 

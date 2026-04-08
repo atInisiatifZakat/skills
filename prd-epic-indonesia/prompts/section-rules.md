@@ -46,7 +46,7 @@
 
 ### §11 Arsitektur Teknis
 **PELANGGARAN:** Tidak ada pendekatan teknis sama sekali · Tidak ada estimasi ukuran · Seksi Repo yang Terdampak tidak ada sama sekali
-**PERINGATAN:** Tech stack tidak disebutkan · Tidak ada diagram arsitektur (di arch.md) · Repo yang disebutkan tidak ada di `repos/config.json` · Perubahan `API Contract` atau `Skema Database` ada tapi §14 Dependensi tidak aktif
+**PERINGATAN:** Tech stack tidak disebutkan · Tidak ada diagram arsitektur (di arch.md) · Repo yang disebutkan tidak konsisten dengan dokumen PRD lain di project · Perubahan `API Contract` atau `Skema Database` ada tapi §14 Dependensi tidak aktif
 
 ### §12 FAQ
 **PELANGGARAN:** Seksi sama sekali tidak ada
