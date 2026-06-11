@@ -8,6 +8,8 @@ Kumpulan skill interaktif untuk Claude Code. Setiap skill mendefinisikan alur ke
 |---|---|---|
 | [`prd-epic-indonesia`](prd-epic-indonesia/SKILL.md) | Buat Epic PRD + Arsitektur Teknis dalam Bahasa Indonesia | "epic", "buat epic PRD", "arsitektur epic" |
 | [`prd-fitur-indonesia`](prd-fitur-indonesia/SKILL.md) | Buat Feature PRD dengan User Stories & Gherkin dalam Bahasa Indonesia | "buat PRD", "PRD fitur", "user stories" |
+| [`strong-style-pair`](strong-style-pair/SKILL.md) | Strong-Style Pair Programming — belajar bahasa pemrograman baru dengan Navigator | "pair programming", "navigator mode", "coding bareng" |
+| [`writing-plans`](writing-plans/SKILL.md) | Implementation Plan (Pseudocode + TDD) sebelum coding | "buat plan", "implementation plan", "pseudocode" |
 
 ---
 
