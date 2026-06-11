@@ -21,16 +21,24 @@ Setiap skill berjalan langsung di Claude Code. Cukup ketik kata kunci pemicunya 
 
 ## Struktur Direktori Skill
 
-Setiap skill mengikuti struktur berikut (disesuaikan dengan kebutuhan skill):
+Struktur direktori setiap skill bisa berbeda tergantung kebutuhan:
 
 ```
 {nama-skill}/
-  SKILL.md        # Entry point: deskripsi, alur kerja, dan aturan skill
-  prompts/        # Prompt pendukung (pertanyaan, aturan validasi, dll.)
-  templates/      # Template output yang dihasilkan skill
+  SKILL.md        # Entry point: deskripsi, alur kerja, dan aturan skill (wajib)
+  prompts/        # Prompt pendukung — pertanyaan wawancara, aturan validasi, dll.
+  templates/      # Template output kosong yang dihasilkan skill
+  references/     # Referensi teknis per bahasa (contoh: go.md, laravel.md)
 ```
 
-File wajib hanya `SKILL.md`. Direktori `prompts/` dan `templates/` bersifat opsional — tambahkan sesuai kebutuhan.
+**Contoh aktual di repo ini:**
+
+| Skill | Direktori Tambahan |
+|---|---|
+| `prd-epic-indonesia` | `prompts/`, `templates/` |
+| `prd-fitur-indonesia` | `prompts/`, `templates/` |
+| `writing-plans` | `references/` |
+| `strong-style-pair` | (hanya `SKILL.md`) |
 
 ---
 
