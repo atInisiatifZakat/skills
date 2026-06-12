@@ -273,7 +273,7 @@ php artisan test tests/Unit/Order/OrderServiceTest.php
 # Expected: Error — OrderService not found
 ```
 
-- [ ] **Step 3: Implementasi** (ikuti spec di atas)
+- [ ] **Step 3: Implementasi** (spec adalah contract — ikuti exactly, catat deviasi sebagai `// DEVIATION:`)
 ```php
 public function createOrder(CreateOrderDTO $dto): Order
 {

@@ -301,7 +301,7 @@ go test ./internal/order/... -run TestCreateOrder -v
 # Expected: compile error — CreateOrder not defined
 ```
 
-- [ ] **Step 3: Implementasi** (ikuti spec di atas)
+- [ ] **Step 3: Implementasi** (spec adalah contract — ikuti exactly, catat deviasi sebagai `// DEVIATION:`)
 ```go
 func (s *OrderService) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Order, error) {
     // implementasi mengikuti pseudocode spec di atas

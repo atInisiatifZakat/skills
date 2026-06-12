@@ -75,7 +75,9 @@ Tulis header plan sebelum apapun — Goal, Architecture, dan Tech Stack adalah k
 # [Feature Name] Implementation Plan
 
 > **For agentic workers:** Execute task-by-task. Pseudocode spec dalam setiap task
-> adalah source of truth — bukan placeholder. Jalankan maksimal 5–7 task per sesi;
+> adalah **prescriptive contract** — setiap GUARD, FETCH, TRANSFORM wajib di-implement
+> exactly, tidak ada improvisasi. Jika merasa ada yang perlu diubah, catat sebagai
+> `// DEVIATION:` comment dan tetap ikuti spec. Jalankan maksimal 5–7 task per sesi;
 > mulai sesi baru untuk task berikutnya dengan membaca state codebase terkini.
 
 **Goal:** [Satu kalimat — apa yang dibangun]
@@ -151,9 +153,27 @@ public function methodName(RequestDTO $dto): ReturnType {
 | `ATOMIC (tx)` | Batas database transaction |
 | `EMIT` | Event publish — selalu di luar ATOMIC kecuali transactional outbox |
 
-**Kapan tulis full code vs pseudocode:**
-- Pseudocode: function dengan business logic, validasi, >5 baris
-- Full code: type definition, error declaration, fungsi trivial <5 baris, boilerplate
+**Kapan tulis full code vs pseudocode — whitelist eksplisit:**
+
+| Kategori | Format | Contoh |
+|---|---|---|
+| `type`, `struct`, `interface` | ✅ Full code | `type Order struct { ... }` |
+| `var Err...`, `errors.New` | ✅ Full code | `var ErrNotFound = errors.New(...)` |
+| Test code | ✅ Full code | Selalu — no placeholders |
+| Dependency wiring | ✅ Full code | Constructor calls + route registration |
+| Test infrastructure schema | ⚠️ Schema notation | Lihat contoh di bawah |
+| Function dengan conditional / loop / error handling | ❌ Pseudocode | Gunakan GUARD/FETCH/ATOMIC |
+
+**Test infrastructure schema — gunakan notation ringkas, bukan full Go:**
+```
+// ❌ Jangan: 40 baris Go+SQL boilerplate untuk setiap stub table
+// ✅ Gunakan schema notation:
+//
+// TestStubs → 2 migrations (ID prefix 00000000000003/4)
+// employees : id TEXT PK, name TEXT, branch_id TEXT nullable
+// branches  : id TEXT PK, name TEXT, is_head_office BOOLEAN
+```
+Agent yang baik bisa menulis Go wrapper dari spec ini. Tidak perlu Sonnet menulisnya lengkap.
 
 **Pseudocode ≠ placeholder:**
 - ❌ Placeholder: `// add validation` (vague)
@@ -163,7 +183,27 @@ public function methodName(RequestDTO $dto): ReturnType {
 
 ### 6. Task Structure (TDD)
 
-Setiap task mengikuti struktur ini. Step implementasi **mengacu ke spec pseudocode** yang sudah ditulis di atas task — tidak perlu repeat full code.
+Setiap task mengikuti struktur ini. Step implementasi **mengacu ke spec pseudocode** yang sudah ditulis di dalam task yang sama — tidak perlu repeat full code, dan spec **tidak boleh** dipindah ke section global terpisah.
+
+**❌ Salah — spec dipisah ke section global:**
+```
+## Pseudocode Spec        ← jangan lakukan ini
+### FindByID: ...
+
+### Task 2:
+- [ ] Step 1: implementasi  ← agent tidak punya referensi inline, akhirnya tulis full code
+```
+
+**✅ Benar — spec inline di dalam task:**
+```
+### Task 2: UserRepository
+
+**Spec:**                  ← spec ada di dalam task
+// GUARD: ...
+// FETCH: ...
+
+- [ ] Step 4: Implementasi (ikuti spec di atas — jangan tulis ulang full code)
+```
 
 ````markdown
 ### Task N: [Nama Komponen]
@@ -180,7 +220,7 @@ Setiap task mengikuti struktur ini. Step implementasi **mengacu ke spec pseudoco
 - [ ] **Step 1: Definisikan types & errors** ← full code, selalu
 - [ ] **Step 2: Tulis failing tests** ← full code, selalu, no placeholders
 - [ ] **Step 3: Run → pastikan FAIL** `<test command>`
-- [ ] **Step 4: Implementasi** (ikuti spec di atas)
+- [ ] **Step 4: Implementasi** (spec adalah contract — ikuti exactly, catat deviasi sebagai `// DEVIATION:`)
 - [ ] **Step 5: Run → pastikan PASS** `<test command>`
 - [ ] **Step 6: Commit** `git commit -m "feat(scope): message"`
 ````
@@ -214,3 +254,5 @@ Setelah plan selesai ditulis, review dengan checklist ini sebelum diserahkan:
 **Placeholder scan:**
 - Tidak ada: "TBD", "TODO", "add validation", "handle edge cases", "similar to Task N"
 - Pseudocode dengan GUARD/FETCH/TRANSFORM eksplisit = ✅ bukan placeholder
+- Spec pseudocode ada **inline di dalam setiap task** — bukan di section global terpisah
+- Step implementasi tidak mengandung full code untuk fungsi yang sudah ada pseudocode spec-nya
