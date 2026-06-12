@@ -44,3 +44,5 @@ compatibility: "Claude.ai web/mobile dan Claude Code"
 |---|---|---|
 | `prd-epic-indonesia` | Product documentation (Indonesian) | `epic.md` + `arch.md` |
 | `prd-fitur-indonesia` | Product documentation (Indonesian) | `prd.md` |
+| `writing-plans` | Implementation planning — Go & Laravel | `docs/plans/YYYY-MM-DD-<feature>.md` |
+| `writing-plans-react` | Implementation planning — React (Vite + TanStack + shadcn/Mantine) | `docs/plans/YYYY-MM-DD-<feature>.md` + `docs/plans/writing-plans-react/discovery.md` |
