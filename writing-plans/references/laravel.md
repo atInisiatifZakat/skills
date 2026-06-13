@@ -30,11 +30,12 @@ public function methodName(RequestDTO $dto): ResultType
     //
     // GUARD: <business validation> → throw new XxxException(...)
     //
-    // DB::transaction(function () use (...) {
-    //   - Model::create([...])
-    //   - $entity->relation()->createMany($items)
-    //   - Repository::decrementStock($items)
-    // })
+    // CTE:
+    //   SQL: WITH inserted AS (INSERT INTO ... RETURNING id),
+    //             rel_rows AS (INSERT INTO ... SELECT id FROM inserted),
+    //             dec_stk  AS (UPDATE ... FROM inserted)
+    //        SELECT * FROM inserted
+    //   - Repository::createWithCTE($entity, $items)
     //
     // dispatch(new XxxEvent($field1, $field2))
     //
@@ -164,12 +165,13 @@ public function createOrder(CreateOrderDTO $dto): Order
     //
     // GUARD: per item, $product->stock < $item->qty → throw InsufficientStockException($productId)
     //
-    // DB::transaction(function () {
-    //   - Order::create([userId, totalAmount, status => 'pending'])
-    //   - $order->items()->createMany($orderItems)
-    //   - ProductRepository::decrementStock($dto->items)
-    //   - IdempotencyRecord::create([key, orderId])
-    // })
+    // CTE:
+    //   SQL: WITH new_order AS (INSERT INTO orders ... RETURNING id),
+    //             new_items AS (INSERT INTO order_items ... FROM new_order),
+    //             dec_stock AS (UPDATE products SET stock = stock - qty ... FROM new_order),
+    //             idem_key  AS (INSERT INTO idempotency_records ... FROM new_order)
+    //        SELECT * FROM new_order
+    //   - OrderRepository::createWithCTE($dto, $orderItems)
     //
     // dispatch(new OrderCreated($order->id, $dto->userId, $totalAmount))
     //

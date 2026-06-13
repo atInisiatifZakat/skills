@@ -24,10 +24,12 @@ func (s *XxxService) MethodName(ctx context.Context, req RequestType) (*Result, 
     //
     // GUARD: <business validation> → return nil, ErrXxx
     //
-    // ATOMIC (tx):
-    //   - Repo.Insert(tx, ...)
-    //   - Repo.Update(tx, ...)
-    //   - Repo.SaveIdempotencyKey(tx, key, id)
+    // CTE:
+    //   SQL: WITH inserted AS (INSERT INTO ... RETURNING id),
+    //             updated  AS (UPDATE ... FROM inserted),
+    //             key_rec  AS (INSERT INTO idempotency_records ... FROM inserted)
+    //        SELECT * FROM inserted
+    //   - Repo.CreateWithCTE(ctx, ...)
     //
     // EMIT: XxxEvent{field1, field2}
     //
@@ -44,9 +46,9 @@ type XxxRepository interface {
     // Komentar singkat apa yang dilakukan, dan contract-nya
     FindByID(ctx context.Context, id string) (*Xxx, error)
     FindManyByIDs(ctx context.Context, ids []string) ([]*Xxx, error)
-    CreateWithItems(ctx context.Context, tx *sql.Tx, entity Xxx, items []Item) (*Xxx, error)
+    // CreateWithCTE melakukan semua write (entity + relations + idempotency) dalam satu CTE query.
+    CreateWithCTE(ctx context.Context, entity Xxx, items []Item, idempotencyKey string) (*Xxx, error)
     FindByIdempotencyKey(ctx context.Context, key string) (*Xxx, error)
-    SaveIdempotencyKey(ctx context.Context, tx *sql.Tx, key, entityID string) error
 }
 ```
 
@@ -140,7 +142,6 @@ package order
 
 import (
     "context"
-    "database/sql"
 )
 
 type UserRepository interface {
@@ -149,13 +150,13 @@ type UserRepository interface {
 
 type ProductRepository interface {
     FindManyByIDs(ctx context.Context, ids []string) ([]*Product, error)
-    DecrementStock(ctx context.Context, tx *sql.Tx, items []OrderItemRequest) error
 }
 
 type OrderRepository interface {
-    CreateWithItems(ctx context.Context, tx *sql.Tx, order Order, items []OrderItem) (*Order, error)
+    // CreateWithCTE melakukan INSERT orders + order_items + decrement stock + idempotency
+    // dalam satu PostgreSQL CTE query — atomik tanpa explicit tx.
+    CreateWithCTE(ctx context.Context, order Order, items []OrderItem, idempotencyKey string) (*Order, error)
     FindByIdempotencyKey(ctx context.Context, key string) (*Order, error)
-    SaveIdempotencyKey(ctx context.Context, tx *sql.Tx, key, orderID string) error
 }
 ```
 
@@ -192,10 +193,13 @@ func (s *OrderService) CreateOrder(ctx context.Context, req CreateOrderRequest) 
     //
     // GUARD: product.Stock < item.Qty → return nil, ErrInsufficientStock
     //
-    // ATOMIC (tx):
-    //   - OrderRepo.CreateWithItems(tx, order, items)
-    //   - ProductRepo.DecrementStock(tx, items)
-    //   - OrderRepo.SaveIdempotencyKey(tx, key, orderID)
+    // CTE:
+    //   SQL: WITH new_order AS (INSERT INTO orders ... RETURNING id),
+    //             new_items AS (INSERT INTO order_items ... FROM new_order),
+    //             dec_stock AS (UPDATE products SET stock = stock - qty ... FROM new_order),
+    //             idem_key  AS (INSERT INTO idempotency_records ... FROM new_order)
+    //        SELECT * FROM new_order
+    //   - OrderRepo.CreateWithCTE(ctx, order, items, req.IdempotencyKey)
     //
     // EMIT: order.created{orderID, userID, totalAmount}
     //

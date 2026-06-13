@@ -136,9 +136,10 @@ public function methodName(RequestDTO $dto): ReturnType {
     // TRANSFORM: <input> → <output>
     //   - detail kalkulasi atau mapping
     // GUARD: <post-fetch condition> → return nil / throw ErrXxx
-    // ATOMIC (tx):
-    //   - <operasi 1>
-    //   - <operasi 2>
+    // CTE:
+    //   SQL: WITH op1 AS (INSERT/UPDATE ... RETURNING id),
+    //             op2 AS (INSERT/UPDATE ... FROM op1)
+    //        SELECT ... FROM op1
     // EMIT: EventName{fields}
     // return result
 }
@@ -150,8 +151,8 @@ public function methodName(RequestDTO $dto): ReturnType {
 | `GUARD` | Kondisi yang menghentikan eksekusi → error spesifik |
 | `FETCH` | Ambil data dari repo/service eksternal |
 | `TRANSFORM` | Konversi/kalkulasi data, tanpa side effect |
-| `ATOMIC (tx)` | Batas database transaction |
-| `EMIT` | Event publish — selalu di luar ATOMIC kecuali transactional outbox |
+| `CTE` | Multi-write atomik satu query (PostgreSQL CTE WITH...AS) — tidak perlu explicit tx |
+| `EMIT` | Event publish — selalu di luar CTE kecuali transactional outbox |
 
 **Kapan tulis full code vs pseudocode — whitelist eksplisit:**
 
@@ -162,7 +163,7 @@ public function methodName(RequestDTO $dto): ReturnType {
 | Test code | ✅ Full code | Selalu — no placeholders |
 | Dependency wiring | ✅ Full code | Constructor calls + route registration |
 | Test infrastructure schema | ⚠️ Schema notation | Lihat contoh di bawah |
-| Function dengan conditional / loop / error handling | ❌ Pseudocode | Gunakan GUARD/FETCH/ATOMIC |
+| Function dengan conditional / loop / error handling | ❌ Pseudocode | Gunakan GUARD/FETCH/CTE |
 
 **Test infrastructure schema — gunakan notation ringkas, bukan full Go:**
 ```
@@ -244,7 +245,7 @@ Setelah plan selesai ditulis, review dengan checklist ini sebelum diserahkan:
 - Goal, Architecture, dan Tech Stack sudah diisi konkret (bukan template placeholder)?
 - Setiap requirement di spec/PRD bisa di-trace ke task mana?
 - Setiap GUARD punya test case?
-- ATOMIC scope sudah benar (EMIT di luar tx)?
+- CTE scope sudah benar (EMIT di luar CTE)?
 
 **Consistency:**
 - Error name di pseudocode identik dengan yang dideklarasi di domain/types task?
